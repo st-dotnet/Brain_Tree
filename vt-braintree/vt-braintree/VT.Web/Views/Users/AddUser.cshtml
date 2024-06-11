@@ -1,0 +1,129 @@
+﻿@using VT.Common
+@model VT.Web.Models.SaveUserModel
+<div id="modal-add-user-form" class="modal fade" aria-hidden="true">
+    <div class="modal-dialog">
+        <form id="saveUserForm" action="@Url.Action("SaveUser", "Users")" class="form-horizontal" method="POST" role="form">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+                    <h4 class="modal-title" id="modal-user-form-title"> Add Employee</h4>
+                    <small class="font-bold"></small>
+                </div>
+                <div class="modal-body">
+                    <div class="row">
+                        <div class="col-lg-12">
+
+                            @Html.HiddenFor(x => x.CompanyWorkerId)
+                            <input type="hidden" value="@Model.Username" id="OriginalEmail" name="OriginalEmail" />
+
+                            @if (User.IsInRole(UserRoles.SuperAdmin.ToString()))
+                            {
+                                <div class="form-group">
+                                    <label class="col-sm-3 control-label">Organization</label>
+                                    <div class="col-sm-9">
+                                        @if (Model.CompanyWorkerId == 0)
+                                        {
+                                        @Html.DropDownListFor(x => x.CompanyId, ViewData["Organizations"] as IEnumerable<SelectListItem>, new { @class = "form-control" })
+                                        }
+                                        else
+                                        {
+                                        <span class="km-medium-font"> @(Model.CompanyName)</span>
+                                        }
+                                    </div>
+                                </div>
+                            }
+                            else
+                            {
+                                @Html.HiddenFor(x => x.CompanyId)
+                            }
+                            <div class="form-group">
+                                <label class="col-sm-3 control-label">Name</label>
+                                <div class="col-sm-3">
+                                    @Html.TextBoxFor(x => x.FirstName, new { @class = "form-control small", placeholder = "First Name" })
+                                </div>
+                                <div class="col-sm-3 no-padding">
+                                    @Html.TextBoxFor(x => x.MiddleName, new { @class = "form-control small", placeholder = "Middle Name" })
+                                </div>
+                                <div class="col-sm-3">
+                                    @Html.TextBoxFor(x => x.LastName, new { @class = "form-control small", placeholder = "Last Name" })
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label class="col-sm-3 control-label">Email</label>
+                                <div class="col-sm-9">
+                                    @Html.TextBoxFor(x => x.Username, new { @class = "form-control small", autocomplete = "off" })
+                                </div>
+                            </div>
+                            <div id="passwordGroup">
+                                <div class="form-group">
+                                    <label class="col-sm-3 control-label">Password</label>
+                                    <div class="col-sm-9">
+                                        @Html.PasswordFor(x => x.AuthKey, new { @class = "form-control small", autocomplete = "off" })
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label class="col-sm-3 control-label">Confirm</label>
+                                    <div class="col-sm-9">
+                                        @Html.PasswordFor(x => x.Confirm, new { @class = "form-control small", autocomplete = "off" })
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label class="col-sm-3 control-label"> Is Administrator </label>
+                                <div class="col-sm-9"> @Html.CheckBoxFor(x => x.IsAdmin, new { @class = "small" }) </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div id="container">
+                        <div class="row">
+                            <div class="col-xs-6">
+                                <h4>All Customers</h4>
+                            </div>
+                            <div class="col-xs-6"><h4>Accessible Customers</h4></div>
+                        </div>
+                        <div class="row">
+                            <div class="col-xs-4">
+                          @Html.DropDownListFor(x => x.From, ViewData["From"] as IEnumerable<SelectListItem>, new
+                          {
+                              @class = "form-control",
+                              multiple = "multiple",
+                              data_right = "#su_multiselect_to_1",
+                              data_right_all = "#su_right_All_1",
+                              data_right_selected = "#su_right_Selected_1",
+                              data_left_selected = "#su_left_Selected_1",
+                              data_left_all = "#su_left_All_1",
+                              size = "10",
+                              id = "su_multiselect_from_1"
+                          })
+                            </div>
+                            <div class="col-xs-2 mt35">
+                                <button type="button" id="su_right_All_1" class="btn btn-block"><i class="fa fa-forward"></i></button>
+                                <button type="button" id="su_right_Selected_1" class="btn btn-default btn-block"><i class="fa fa-chevron-right"></i></button>
+                                <button type="button" id="su_left_Selected_1" class="btn btn-default btn-block"><i class="fa fa-chevron-left"></i></button>
+                                <button type="button" id="su_left_All_1" class="btn btn-block"><i class="fa fa-backward"></i></button>
+                            </div>
+                            <div class="col-xs-4">
+                          @Html.DropDownListFor(x => x.To, ViewData["To"] as IEnumerable<SelectListItem>, new
+                          {
+                              @class = "form-control",
+                              multiple = "multiple",
+                              size = "10",
+                              id = "su_multiselect_to_1"
+                          })
+                            </div>
+                            <div class="col-xs-2 mt35">
+                                <button type="button" id="subtnUp" class="btn btn-default btn-block"><i class="fa fa-arrow-up"></i></button>
+                                <button type="button" id="subtnDown" class="btn btn-default btn-block"><i class="fa fa-arrow-down"></i></button>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                    <button id="btnSaveUser" type="submit" class="btn btn-warning">Submit</button>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>

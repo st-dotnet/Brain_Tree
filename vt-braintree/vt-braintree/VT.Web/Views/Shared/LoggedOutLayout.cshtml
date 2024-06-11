@@ -1,0 +1,17 @@
+﻿@{
+    Layout = "Layout.cshtml";
+    ViewBag.BodyCss = "gray-bg";
+}
+
+@section PageLevelStyles
+{
+    @RenderSection("PageLevelStyles", false)
+}
+
+@section PageLevelScripts
+{
+    @RenderSection("PageLevelScripts", false)
+}
+
+<!-- Main view  -->
+@RenderBody()

@@ -1,0 +1,188 @@
+﻿@model VT.Web.Models.MerchantAccountViewModel
+@{
+    ViewBag.Title = "Configure Merchant Account";
+    Layout = "~/Views/Shared/LoggedInLayout.cshtml";
+}
+
+@section PageLevelScripts
+{
+    @Scripts.Render("~/plugins/validate")
+    <script src="@Url.Content("~/Scripts/app/config.js")"></script>
+}
+
+<form id="orgMerchantAccountForm" action="@Url.Action("ConfigureMerchant", "Config")" class="form-horizontal" method="POST" role="form">
+    <div class="row wrapper border-bottom white-bg page-heading">
+        <div class="col-lg-10">
+            <h2>Organization Merchant Account</h2>
+        </div>
+        <div class="col-lg-2">
+        </div>
+    </div>
+
+    <div class="wrapper wrapper-content animated fadeInRight">
+        <div class="row">
+            <div class="col-lg-12">
+                <div class="ibox float-e-margins">
+                    <div class="ibox-title">
+                        <h5>SETUP MERCHANT ACCOUNT</h5>
+                        <div class="ibox-tools">
+                            <a class="collapse-link">
+                                <i class="fa fa-chevron-up"></i>
+                            </a>
+                        </div>
+                    </div>
+                    <div class="ibox-content">
+                        <h4>Individual Detail</h4>
+                        <div class="alert alert-danger hide">
+                            <span class="error-message"></span>
+                        </div>
+                        <div class="hr-line-dashed"></div>
+                        <div class="row">
+                            <div class="col-xs-6">
+                                @Html.HiddenFor(x => x.Id)
+                                @Html.HiddenFor(x=>x.CompanyId)
+                                
+                                @Html.HiddenFor(x => x.RedirectUrl)
+
+                                <div class="form-group">
+                                    <label class="col-sm-3 control-label">First Name</label>
+                                    <div class="col-sm-9">
+                                        @Html.TextBoxFor(x => x.FirstName, new { @class = "form-control small" })
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label class="col-sm-3 control-label">Last Name</label>
+                                    <div class="col-sm-9">
+                                        @Html.TextBoxFor(x => x.LastName, new { @class = "form-control small" })
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label class="col-sm-3 control-label">Email</label>
+                                    <div class="col-sm-9">
+                                        @Html.TextBoxFor(x => x.Email, new { @class = "form-control small" })
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label class="col-sm-3 control-label">Date Of Birth</label>
+                                    <div class="col-sm-9">
+                                        @Html.TextBoxFor(x => x.DateOfBirth, new { @class = "form-control small", placeholder = "YYYY-MM-DD" })
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-xs-6">
+                                <div class="form-group">
+                                    <label class="col-sm-3 control-label">Street Address</label>
+                                    <div class="col-sm-9">
+                                        @Html.TextBoxFor(x => x.IndStreetAddress, new { @class = "form-control small" })
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label class="col-sm-3 control-label">City</label>
+                                    <div class="col-sm-9">
+                                        @Html.TextBoxFor(x => x.IndLocality, new { @class = "form-control small" })
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label class="col-sm-3 control-label">State</label>
+                                    <div class="col-sm-9">
+                                        @Html.TextBoxFor(x => x.IndRegion, new { @class = "form-control small" })
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label class="col-sm-3 control-label">Postal Code</label>
+                                    <div class="col-sm-9">
+                                        @Html.TextBoxFor(x => x.IndPostalCode, new { @class = "form-control small" })
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <h4>Business & Funding Detail</h4>
+                        <div class="hr-line-dashed"></div>
+                        <div class="row">
+                            <div class="col-xs-6">
+                                <div class="form-group">
+                                    <label class="col-sm-3 control-label">Legal Name</label>
+                                    <div class="col-sm-9">
+                                        @Html.TextBoxFor(x => x.LegalName, new { @class = "form-control small" })
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label class="col-sm-3 control-label">Tax Id</label>
+                                    <div class="col-sm-9">
+                                        @Html.TextBoxFor(x => x.TaxId, new { @class = "form-control small" })
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label class="col-sm-3 control-label">Street Address</label>
+                                    <div class="col-sm-9">
+                                        @Html.TextBoxFor(x => x.BusStreetAddress, new { @class = "form-control small" })
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label class="col-sm-3 control-label">City</label>
+                                    <div class="col-sm-9">
+                                        @Html.TextBoxFor(x => x.BusLocality, new { @class = "form-control small" })
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label class="col-sm-3 control-label">State</label>
+                                    <div class="col-sm-9">
+                                        @Html.TextBoxFor(x => x.BusRegion, new { @class = "form-control small" })
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label class="col-sm-3 control-label">Postal Code</label>
+                                    <div class="col-sm-9">
+                                        @Html.TextBoxFor(x => x.BusPostalCode, new { @class = "form-control small" })
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-xs-6">
+                                @*<div class="form-group">
+                                    <label class="col-sm-3 control-label">Descriptor</label>
+                                    <div class="col-sm-9">
+                                        @Html.TextBoxFor(x => x.Descriptor, new { @class = "form-control small" })
+                                    </div>
+                                </div>*@
+                                <div class="form-group">
+                                    <label class="col-sm-3 control-label">Fund Email</label>
+                                    <div class="col-sm-9">
+                                        @Html.TextBoxFor(x => x.FundEmail, new { @class = "form-control small" })
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label class="col-sm-3 control-label">Fund Mobile Phone</label>
+                                    <div class="col-sm-9">
+                                        @Html.TextBoxFor(x => x.FundMobilePhone, new { @class = "form-control small phone" })
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label class="col-sm-3 control-label">Account Number</label>
+                                    <div class="col-sm-9">
+                                        @Html.TextBoxFor(x => x.AccountNumber, new { @class = "form-control small" })
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label class="col-sm-3 control-label">Routing Number</label>
+                                    <div class="col-sm-9">
+                                        @Html.TextBoxFor(x => x.RoutingNumber, new { @class = "form-control small" })
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="modal-footer">
+                                <button id="btnSaveMerchantAccount" type="submit" class="btn btn-warning">Submit</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</form>
+
+
+
+

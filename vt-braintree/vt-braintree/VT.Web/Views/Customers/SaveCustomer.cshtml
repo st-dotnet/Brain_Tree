@@ -1,0 +1,125 @@
+﻿@using VT.Common
+@using VT.Web.Models
+@model SaveCustomerViewModel
+
+<div id="modal-add-customer-form" class="modal fade" aria-hidden="true">
+    <form id="saveCustomerForm" action="@Url.Action("SaveCustomer", "Customers")" class="form-horizontal" method="POST" role="form">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+                    <h4 class="modal-title" id="modal-save-customer-title">Add Customer</h4>
+                    <small class="font-bold"></small>
+                </div>
+                <div class="modal-body">
+                    <div class="row">
+                        <div class="col-lg-6">
+                            @Html.HiddenFor(x => x.CustomerId)
+                            <div class="form-group">
+                                <label class="col-sm-3">Name</label>
+                                <div class="col-sm-9">
+                                    @Html.TextBoxFor(x => x.Name, new { @class = "form-control small" })
+                                </div>
+                            </div>
+                        </div>
+                        @if (User.IsInRole(UserRoles.SuperAdmin.ToString()))
+                        {
+                            <div class="col-lg-6">
+                                <div class="form-group">
+                                    <label class="col-sm-3">Organization</label>
+                                    <div class="col-sm-9">
+                                        @Html.DropDownListFor(x => x.CompanyId, ViewData["Organizations"] as IEnumerable<SelectListItem>, new { @class = "form-control" })
+                                    </div>
+                                </div>
+                            </div>
+                        }
+                        else
+                        {
+                            @Html.HiddenFor(x => x.CompanyId)
+                        }
+                    </div>
+
+                    <div id="divIsActive" class="row @(!Model.HasGatewayCustomer ? "hide" :"" )">
+                        <div class="col-lg-12">
+                            <div class="form-group">
+                                <label class="col-sm-3">Is Payment method Active</label>
+                                <div class="col-sm-9">
+                                    @Html.CheckBoxFor(x => x.IsActive, new { @class = "js-switch" })
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="hr-line-dashed"></div>
+                    <div class="row">
+                        <div class="col-lg-6 b-r">
+                            <div class="form-group">
+                                <label class="col-sm-12">Address</label>
+                            </div>
+                            <div class="form-group">
+                                <div class="col-sm-12">
+                                    @Html.TextBoxFor(x => x.Address, new { @class = "form-control small" })
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <div class="col-sm-4">
+                                    @Html.TextBoxFor(x => x.City, new { @class = "form-control small", placeholder = "City" })
+                                </div>
+                                <div class="col-sm-4">
+                                    @Html.TextBoxFor(x => x.State, new { @class = "form-control small", placeholder = "State" })
+                                </div>
+                                <div class="col-sm-4">
+                                    @Html.TextBoxFor(x => x.PostalCode, new { @class = "form-control small", placeholder = "Zip" })
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <div class="col-sm-12">
+                                    @Html.TextBoxFor(x => x.Country, new { @class = "form-control small", placeholder = "Country" })
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-lg-6">
+                            <div class="form-group">
+                                <label class="col-sm-12">Contact</label>
+                            </div>
+                            <div class="form-group">
+                                <div class="col-sm-4">
+                                    @Html.TextBoxFor(x => x.ContactFirstName, new { @class = "form-control small", placeholder = "First Name" })
+                                </div>
+                                <div class="col-sm-4">
+                                    @Html.TextBoxFor(x => x.ContactMiddleName, new { @class = "form-control small", placeholder = "Middle Name" })
+                                </div>
+                                <div class="col-sm-4">
+                                    @Html.TextBoxFor(x => x.ContactLastName, new { @class = "form-control small", placeholder = "Last Name" })
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <div class="col-sm-12">
+                                    @Html.TextBoxFor(x => x.ContactEmail, new { @class = "form-control small", placeholder = "Email" })
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <div class="col-sm-6">
+                                    @Html.TextBoxFor(x => x.ContactMobile, new { @class = "form-control small phone", placeholder = "Mobile" })
+                                </div>
+                                <div class="col-sm-6">
+                                    @Html.TextBoxFor(x => x.ContactTelephone, new { @class = "form-control small phone", placeholder = "Telephone" })
+                                </div>
+                            </div>
+                        </div>
+                    </div> 
+
+                    <div class="row m-t-sm" id="customerServiceGrid">
+                        
+                    </div>
+
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                    <button id="btnSaveCustomer" type="submit" class="btn btn-warning">Submit</button>
+                </div>
+            </div>
+        </div>
+    </form>
+</div>
+

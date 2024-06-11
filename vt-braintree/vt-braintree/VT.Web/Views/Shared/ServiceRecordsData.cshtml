@@ -1,0 +1,103 @@
+﻿@using Kendo.Mvc.UI
+@using VT.Common
+@using VT.Web.Models
+
+<script type="text/javascript">
+    
+    function getImageInfo(item) {
+        return [
+            "<a class='attachment' data-id='" + item.ServiceRecordItemId + "' href='#' title='View Images'><i class='fa fa-camera'></i></a>"
+        ].join('');
+    }
+    $(document).on("click", ".attachment", function () {
+        $.ajax({
+            url: "/ServiceRecords/Attachments/" + $(this).data("id"),
+            type: "POST",
+            success: function (viewResult) {
+                $("#divAttachments").html(viewResult);
+                $("#modal-attachments").modal({
+                    backdrop: 'static',
+                    keyboard: false,
+                    show: true
+                });
+            }
+        });
+        return false;
+    });
+</script>
+
+
+
+@Html.Partial("GridHeader", "ServiceRecordListGrid")
+@(Html.Kendo().Grid<ServiceRecordDetail>()
+                            .Name("ServiceRecordListGrid")
+                            .Pageable(page => page
+                            .Info(true)
+                            .ButtonCount(5)
+                            .Messages(message => message
+                                                        .Empty("No data")
+                                                        .Next("Next")
+                                                        .Previous("Previous")
+                                                        .First("First")
+                                                        .Last("Last")
+                            )
+                            )
+                            .Filterable()
+                            .Sortable()
+                            .Columns(columns =>
+                                    {
+                                        columns.Bound(o => o.ServiceRecordId).Title("Id").Width(75);
+
+                                        columns.Bound(o => o.CompanyName).Title("Organization").Visible(User.IsInRole(UserRoles.SuperAdmin.ToString()));
+                                        columns.Bound(o => o.CustomerName).Title("Customer");
+                                        columns.Bound(o => o.CompanyWorkerEmail).Title("Employee");
+                                        columns.Bound(o => o.EndTime).ClientTemplate("#=kendo.toString(EndTime,'MM/dd/yyyy HH:mm')#").Title("Time");
+                                        columns.Bound(o => o.Status).Title("Status");
+                                        columns.Bound(o => o.TotalAmount).Title("Total Amount").Format("{0:c}");
+                                    })
+                                    .ToolBar(toolbar =>
+                                    {
+                                        toolbar.Template(@<text>
+                                            <div class="toolbar">
+                                                <a href="javascript:void(0)" onclick="return VT.Util.ClearAllKendoGridFilter();" class="btn btn-primary btn-sm btn-rounded">Clear Filters</a>
+                                            </div>
+                                        </text>);
+                                    })
+                 .Events(events => events.DataBound("VT.Util.ConnectKendoGrids"))
+                 .DataSource(dataSource => dataSource
+                                             .Ajax()
+                                             .PageSize(10)
+                                             .Model(model => model.Id(p => p.ServiceRecordId))
+                                                             .Read(read => read.Action("GetServiceRecords", "ServiceRecords"))
+                 )
+                 .ClientDetailTemplateId("ServiceRecordItemListTemplate")
+      )
+
+<script id="ServiceRecordItemListTemplate" type="text/kendo-tmpl">
+    @(Html.Kendo().Grid<ServiceRecordItemDetail>()
+          .Name("ServiceRecordItemListGrid_#=ServiceRecordId#")
+          .HtmlAttributes(new { @class = "recordItems", @title = "Services Performed" })
+          .Sortable()
+          .Columns(columns =>
+                   {
+                       columns.Bound(o => o.ServiceRecordId).Title("Id").Visible(false);
+                       columns.Bound(o => o.ServiceRecordItemId).Width(75).Visible(false); ;
+                       columns.Bound(o => o.ServiceName).Title("Service").Width(200);
+                       columns.Bound(o => o.Description).Title("Description").Width(500);
+                       columns.Bound(o => o.CostOfService).Title("Cost").Format("{0:c}").Width(75);
+                       columns.Template(@<text></text>).Title("Actions")
+                        .ClientTemplate("\\#= getImageInfo.apply(this, arguments) \\#").Width(75);
+                   })
+          .DataSource(dataSource => dataSource
+                                    .Ajax()
+                                    .Model(model => model.Id(p => p.ServiceRecordItemId))
+                                            .Read(read => read.Action("GetServiceRecordItems", "ServiceRecords", new { id = "#=ServiceRecordId#" }))
+          )
+          .ToClientTemplate())
+</script>
+
+<script type="text/javascript">
+    $(function () {
+        $('#ServiceRecordListGrid').data('kendoGrid');
+    })
+</script>

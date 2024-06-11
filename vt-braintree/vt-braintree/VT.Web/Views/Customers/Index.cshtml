@@ -1,0 +1,182 @@
+﻿@using Kendo.Mvc.UI
+@using VT.Common
+@using VT.Web.Models
+
+@{
+    ViewBag.Title = "Customers";
+    Layout = "~/Views/Shared/LoggedInLayout.cshtml";
+    var customIdentity = (VT.Common.CustomIdentity)User.Identity;
+    var gateway = customIdentity.PaymentGateway;
+}
+
+@section PageLevelStyles
+{
+    @Styles.Render("~/plugins/switcheryStyles")
+    @Styles.Render("~/plugins/jasnyBootstrapStyles")
+}
+
+@section PageLevelScripts
+{
+    @Scripts.Render("~/plugins/validate")
+    @Scripts.Render("~/plugins/iCheck")
+    @Scripts.Render("~/plugins/switchery")
+    @Scripts.Render("~/plugins/jasnyBootstrap")
+
+    <script src="@Url.Content("~/Scripts/app/customer.js")"></script>
+
+    <script type="text/javascript">
+        var gateway = '@gateway';
+        $('.phone').inputmask({
+            mask: '(999) 999-9999'
+        });
+      
+        function getActionsInfo(item) {
+            return [
+                "<a class='edit-customer' data-id='" + item.Id + "' href='#dynamicModal'><i class='fa fa-edit'></i> </a> " +
+                "<a class='view-customer' data-id='" + item.Id + "' href='#divcustomerdetails'><i class='fa fa-eye'></i> </a> "
+            ].join('');
+        }
+
+        function getPaymentConfiguredInfo(item) {
+            var action = gateway === '2' ? "ConfigureSplashCustomerCc" : "ConfigureCustomerCc";
+            var ccLink = " <a href='/" + action + "/" + item.Id + "' title='Configure'><i class='fa fa-wrench'></i></a>";
+
+            var html = "<span class='label label-" + item.PaymentConfiguredCss + "'>" + item.PaymentConfiguredText + "</span>";
+            html += ccLink;
+            html += " <a href='#' class='sendEmail' data-id='" + item.Id + "' title='Send Email'> <i class='fa fa-envelope'></i></a>";
+            return html;
+        }
+
+    </script>
+
+}
+@Html.Hidden("companyId", customIdentity.CompanyId)
+
+<div class="row wrapper border-bottom white-bg page-heading">
+    <div class="col-lg-10">
+        <h2>CUSTOMERS</h2>
+    </div>
+    <div class="col-lg-2">
+    </div>
+</div>
+<div class="wrapper wrapper-content animated fadeInRight">
+    <div class="row">
+        <div class="col-lg-12">
+            <div class="ibox float-e-margins">
+                <div class="ibox-title">
+                    <h5>ALL CUSTOMERS</h5>
+                    <div class="ibox-tools">
+                        <a class="collapse-link">
+                            <i class="fa fa-chevron-up"></i>
+                        </a>
+                    </div>
+                </div>
+                <div class="ibox-content">
+                    <div class="">
+                        <a href="#" id="btnAddCustomer" class="btn btn-info btn-rounded btn-outline "><i class="fa fa-plus"></i> &nbsp; Add Customer</a>
+                        <a href="#modal-del-customer-form" id="btnDeleteCustomer" class="btn btn-danger btn-rounded btn-outline"><i class="fa fa-trash"></i> &nbsp; Delete Customer</a>
+                        @if (ApplicationSettings.EnableCustomerImport)
+                        {
+                            <a href="#modal-import-customers" data-toggle="modal" id="btnImportCustomers" class="btn btn-primary btn-rounded btn-outline pull-right"><i class="fa fa-file-excel-o"></i> &nbsp; Import Customers</a>
+                        }
+                    </div>
+
+                    @Html.Partial("GridHeader", "CustomerListGrid")
+
+                    @(Html.Kendo().Grid<CustomerListViewModel>()
+                          .Name("CustomerListGrid")
+                          .Reorderable(x => x.Columns(true))
+                          .Pageable(page => page
+                              .Info(true)
+                              .ButtonCount(5)
+                              .Messages(message => message
+                                  .Empty("No data")
+                                  .Next("Next")
+                                  .Previous("Previous")
+                                  .First("First")
+                                  .Last("Last")
+                              )
+                          )
+                          .Filterable()
+                          .Sortable()
+                          .Columns(columns =>
+                          {
+                              columns.Bound(x => x.Id).Title("")
+                                  .ClientTemplate("<input type='checkbox' value='#= Id #' class='i-checks'></input>").Filterable(false);
+
+                              columns.Bound(x => x.Id).Visible(false);
+                              columns.Bound(x => x.CompanyId).Visible(false);
+                              columns.Bound(x => x.CompanyName).Visible(User.IsInRole(UserRoles.SuperAdmin.ToString())).Title("Organization").Filterable(ftb => ftb.Multi(true));
+                              columns.Bound(x => x.Name).Title("Name");
+                              columns.Bound(x => x.Contact).Title("Contact");
+                              columns.Bound(x => x.Email).Title("Email");
+                              columns.Bound(x => x.Telephone).Title("Telephone");
+
+                              columns.Template(@<text></text>)
+                                  .Title("Payment Configured?")
+                                  .ClientTemplate("#= getPaymentConfiguredInfo.apply(this, arguments) #");
+
+                              columns.Template(@<text></text>)
+                                  .Title("Actions")
+                                  .ClientTemplate("#= getActionsInfo.apply(this, arguments) #");
+                          })
+                            .Events(events => events.DataBound("VT.Util.ConnectKendoGrids"))
+                            .DataSource(dataSource => dataSource
+                                .Ajax()
+                                .PageSize(10)
+                                .Model(model => model.Id(p => p.Id))
+                                .Read(read => read.Action("CustomerList", "Customers")))
+
+                    )
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row" id="divCustomerDetails">
+
+    </div>
+</div>
+
+@Html.Partial("ConfirmModal", new ModalViewModal
+{
+    Id = "modal-del-customer-form",
+    IsAlertModel = false,
+    Title = "Delete Customer(s)",
+    Message = "Are you sure you want to delete the selected Customer(s)?"
+})
+
+@Html.Partial("ConfirmModal", new ModalViewModal
+{
+    Id = "modal-send-email",
+    IsAlertModel = false,
+    Title = "Send Email",
+    Message = "Are you sure you want to send email to this customer?",
+    BtnId = "btnSendEmail"
+})
+
+<div id="customer-services">
+    <!--Load dynamic content through ajax-->
+</div>
+<div id="divImportCustomers">
+    <!--Load dynamic content through ajax-->
+</div>
+
+
+<div id="divAttachments">
+    <!--Load dynamic content through ajax-->
+</div>
+
+
+@Html.Partial("SaveCustomer", new SaveCustomerViewModel
+{
+    CompanyId = customIdentity.CompanyId != null ? customIdentity.CompanyId.Value : 0 
+})
+
+@Html.Partial("ImportCustomers", new ImportCustomerViewModel
+{
+    CompanyId = customIdentity.CompanyId != null ? customIdentity.CompanyId.Value : 0
+})
+
+
+

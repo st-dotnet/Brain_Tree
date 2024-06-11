@@ -1,0 +1,55 @@
+﻿@using VT.Common
+@model VT.Web.Models.ImportUsersModel
+
+<div id="modal-import-users" class="modal fade" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <form id="importUsersForm" action="@Url.Action("Import", "Users")" class="form-horizontal" method="POST" enctype="multipart/form-data" role="form">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+                    <h4 class="modal-title">Import Employees</h4>
+                    <small class="font-bold"></small>
+                </div>
+                <div class="modal-body">
+                    <div class="row">
+                        <div class="col-lg-12">
+                            @if (User.IsInRole(UserRoles.SuperAdmin.ToString()))
+                            {
+                                <div class="form-group">
+                                    <label class="col-sm-3 control-label">Organization</label>
+                                    <div class="col-sm-9">
+                                        @Html.DropDownListFor(x => x.CompanyId, ViewData["Organizations"] as IEnumerable<SelectListItem>, new { @class = "form-control" })
+                                    </div>
+                                </div>
+                                <div class="hr-line-dashed"></div>
+                            }
+                            else
+                            {
+                                @Html.HiddenFor(x => x.CompanyId)
+                            }                            
+                            <div class="form-group">
+                                <label class="col-sm-3 control-label">Upload CSV file</label>
+                                <div class="col-sm-9">
+                                    <input type="file" name="uploadCsv" id="uploadCsv" />
+                                </div>
+                            </div>
+                            <div class="hr-line-dashed"></div>
+
+                            <div id="messagebox">
+                                
+                            </div>
+
+                            <div id="grid">
+                                <!--Load dynamic kendo grid-->
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                    <button id="btnImportSubmit" type="submit" class="btn btn-warning">Import</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>

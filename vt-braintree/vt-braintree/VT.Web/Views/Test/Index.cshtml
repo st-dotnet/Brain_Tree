@@ -1,0 +1,48 @@
+﻿
+@{
+    ViewBag.Title = "Index";
+    Layout = "~/Views/Shared/LoggedOutLayout.cshtml";
+}
+
+<h2>Index</h2>
+
+
+<script type="text/javascript">
+    // See the Configuring section to configure credentials in the SDK
+    AWS.config.update({ accessKeyId: 'AKIAIM5TSADPNSAXTKBA', secretAccessKey: 'ycW5cR4QMBqhdzPHxmeu5F8ZW36HZTuD7lfdGMJL' });
+
+    // Configure your region
+    //AWS.config.region = 'us-east-1';
+</script>
+<input type="file" id="file-chooser" />
+<button id="upload-button">Upload to S3</button>
+<div id="results"></div>
+
+<script type="text/javascript">
+    var bucket = new AWS.S3({ params: { Bucket: 'verifyteck' } });
+
+    var fileChooser = document.getElementById('file-chooser');
+    var button = document.getElementById('upload-button');
+    var results = document.getElementById('results');
+    button.addEventListener('click', function () {
+        var file = fileChooser.files[0];
+        
+        if (file) {
+            results.innerHTML = '';
+            
+          var key  = "workflowimages/" + file.name;
+          var params = {
+              Key: key,
+              ContentType: file.type,
+              Body: file,
+              Acl: 'public-read'
+          };
+            bucket.upload(params, function (err, data) {
+                alert(err);
+                results.innerHTML = err ? 'ERROR!' : 'UPLOADED.';
+            });
+        } else {
+            results.innerHTML = 'Nothing to upload.';
+        }
+    }, false);
+</script>

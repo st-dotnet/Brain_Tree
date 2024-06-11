@@ -1,0 +1,12 @@
+﻿
+@{
+    ViewBag.Title = "Test";
+    Layout = "~/Views/Shared/LoggedOutLayout.cshtml";
+}
+
+<h2>Test</h2>
+
+<form action="@Url.Action("Savefile", "Company")" method="POST" enctype="multipart/form-data">
+    <input type="file" name="img" />
+    <input type="submit" value="upload file" />
+</form>

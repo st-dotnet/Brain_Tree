@@ -1,0 +1,53 @@
+﻿@using VT.Web.Helpers
+
+@{
+    Layout = "MobileLayout.cshtml";
+    ViewBag.BodyCss = "";
+}
+
+@section PageHeadScripts
+{
+    <script type="text/javascript">
+        //function onReady(callback) {
+        //    var intervalId = window.setInterval(checkReady, 1000);
+
+        //    function checkReady() {
+        //        if (document.getElementsByTagName('body')[0] !== undefined) {
+        //            window.clearInterval(intervalId);
+        //            callback.call(this);
+        //        }
+        //    }
+        //}
+
+        //function show(id, value) {
+        //    document.getElementById(id).style.display = value ? 'block' : 'none';
+        //}
+
+        //onReady(function () {
+        //    show('page', true);
+        //    show('loading', false);
+        //});
+    </script>
+}
+
+@section PageLevelStyles
+{
+    @RenderSection("PageLevelStyles", false)
+}
+
+@section PageLevelScripts
+{
+    @RenderSection("PageLevelScripts", false)
+}
+
+<!-- Wrapper-->
+<!-- PageClass give you ability to specify custom style for specific view based on action -->
+<div id="wrapper" class="@Html.PageClass()">
+   <!-- Page wraper -->
+    <div id="page-wrapper" class="gray-bg @ViewBag.SpecialClass">
+        <!-- Main view  -->
+        @RenderBody()
+    </div>
+    <!-- End page wrapper-->
+</div>
+<!-- End wrapper-->

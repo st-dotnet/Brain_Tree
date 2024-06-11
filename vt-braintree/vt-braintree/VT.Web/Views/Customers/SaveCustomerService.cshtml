@@ -1,0 +1,277 @@
+﻿@using Kendo.Mvc.UI
+@using VT.Common
+@using VT.Web.Models
+@model CustomerServiceViewModel
+
+<script type="text/javascript">
+
+    function getActionsInfo(item) {
+        return [
+            "<a class='edit-companyService' data-id='" + item.CompanyServiceId + "' href='#dynamicModal'><i class='fa fa-edit'></i> </a>"
+        ].join('');
+    }
+
+</script>
+@*<div id="modal-manage-services-form" class="modal fade" aria-hidden="true">*@
+<form id="saveCustomerServiceForm" action="@Url.Action("SaveCustomerServices", "Customers")" class="form-horizontal" method="POST" role="form">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+                <h4 class="modal-title">Manage Customer Services</h4>
+                <small class="font-bold"></small>
+            </div>
+            <div class="modal-body">
+                <div class="row">
+                    <div class="col-lg-12">
+
+                        @Html.HiddenFor(x => x.CustomerId)
+
+                        <div class="form-group">
+                            <label class="col-sm-3 control-label">Organization</label>
+                            <div class="col-sm-9">
+                                @Html.DropDownListFor(x => x.CompanyServiceId, ViewData["CompanyServices"] as IEnumerable<SelectListItem>, new { @class = "form-control" })
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="col-sm-3 control-label">Name</label>
+                            <div class="col-sm-9">
+                                @Html.TextBoxFor(x => x.ServiceName, new { @class = "form-control small" })
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="col-sm-3 control-label">Description</label>
+                            <div class="col-sm-9">
+                                @Html.TextBoxFor(x => x.Description, new { @class = "form-control small" })
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="col-sm-3 control-label">Price</label>
+                            <div class="col-sm-9">
+                                @Html.TextBoxFor(x => x.Price, new { @class = "form-control small" })
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <div class="col-sm-9"></div>
+                            <div class="col-sm-3 col-sm-offset-1 pull-right">
+                                <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                                <button id="btnSaveCustomerService" type="submit" class="btn btn-warning">Submit</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <div class="row">
+                    <div class="col-lg-12">
+                        <div class="form-group">
+                            <div class="col-sm-1 pull-left aligncenter">
+                                <button id="btnDeleteCustomerService" type="button" class="btn btn-danger btn-circle">
+                                    <i class="fa fa-times"></i>
+                                </button>
+                            </div>
+                            <div class="col-sm-11 aligncenter">
+                                @Html.Partial("GridHeader", "CustomerServiceListGrid")
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <div class="col-sm-12">
+                                @(Html.Kendo().Grid<CustomerServiceViewModel>()
+                                      .Name("CustomerServiceListGrid")
+                                      .Reorderable(x => x.Columns(true))
+                                      .Pageable(page => page
+                                          .Info(true)
+                                          .ButtonCount(5)
+                                          .Messages(message => message
+                                              .Empty("No data")
+                                              .Next("Next")
+                                              .Previous("Previous")
+                                              .First("First")
+                                              .Last("Last")
+                                          )
+                                      )
+                                      .Sortable()
+                                      .Columns(columns =>
+                                      {
+                                          columns.Bound(x => x.CustomerServiceId).Title("")
+                                              .ClientTemplate("<input type='checkbox' value='#= CustomerServiceId #' class='i-checks'></input>");
+                                          columns.Bound(x => x.CustomerId).Visible(false);
+
+                                          columns.Bound(x => x.ServiceName).Title("Name");
+                                          columns.Bound(x => x.Description).Title("Description");
+                                          columns.Bound(x => x.Price).Title("Price");
+
+                                          columns.Template(@<text></text>)
+                                              .Title("")
+                                              .ClientTemplate("#= getActionsInfo.apply(this, arguments) #");
+
+                                      })
+                                      .Events(events => events.DataBound("VT.Util.ConnectKendoGrids"))
+                                      .DataSource(dataSource => dataSource
+                                          .Ajax()
+                                          .PageSize(10)
+                                          .Model(model => model.Id(p => p.CustomerServiceId))
+                                          .Read(read => read.Action("CustomerServiceList", "Customers", new { id =  Model.CustomerId })))
+
+                                      )
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</form>
+@*</div>*@
+
+<script>
+    $(document).ready(function () {
+         
+        //on service change
+        $("#CompanyServiceId").change(function () {
+            var id = $(this).val();
+            if (id.length == 0) {
+                return false;
+            }
+
+            $.ajax({
+                url: '/Customers/GetCompanyServiceDetail/' + id,
+                type: 'POST',
+                success: function (data) {
+                    if (data.success) {
+                        $("#Name").val(data.result.Name);
+                        $("#Description").val(data.result.Description);
+                    } else {
+                        VT.Util.HandleLogout(data.message);
+                    }
+                },
+                error: function (xhr, status, error) {
+                    VT.Util.Notification(false, error);
+                }
+            });
+            return false;
+        });
+
+        $("#btnDeleteCustomerService").click(function () {
+
+            var checkedCount = $("#CustomerServiceListGrid input:checked").length;
+            if (checkedCount > 0) {
+                $("#delete-customer-service-modal").show();
+                $("#delete-customer-service-modal").modal({
+                    backdrop: 'static',
+                    keyboard: false,
+                    show: true
+                });
+            } else {
+                VT.Util.Notification(false, "Please select at least one customer's service to delete.");
+            }
+        });
+
+        $("#btnDeleteCustomerServicesSubmit").click(function() {
+            var buttonText = $(this).html();
+            $(this).attr('disabled', '').html('<i class="fa fa-spinner fa-spin"></i>&nbsp; ' + buttonText);
+
+            var ids = [];
+            $("#CustomerServiceListGrid input:checked").each(function () {
+                ids.push($(this).val());
+            });
+            $.ajax({
+                url: '/Customers/DeleteCustomerServices',
+                type: "POST",
+                dataType: "json",
+                contentType: 'application/json; charset=utf-8',
+                data: JSON.stringify({ Ids: ids }),
+                success: function (result) {
+                    debugger;
+                    if (result.success) {
+                        VT.Util.Notification(true, "Selected Customer service(s) have been successfully deleted.");
+                        $("#delete-customer-service-modal").modal("hide");
+                        //refresh grid
+                        var grid = $("#CustomerServiceListGrid").data("kendoGrid");
+                        grid.dataSource.read();
+                    } else {
+                        VT.Util.HandleLogout(result.message);
+                        VT.Util.Notification(false, "Some error occured while deleting selected customer's services.");
+                    }
+
+                    $(this).attr('disabled', null).html('Submit');
+                },
+                error: function (xhr, status, error) {
+                    VT.Util.Notification(false, error);
+                    $(this).attr('disabled', null).html('Submit');
+                }
+            });
+        });
+
+        //on submit
+        $("#saveCustomerServiceForm").validate({
+            rules: {
+                Name: {
+                    required: true
+                },
+                Description: {
+                    required: true
+                },
+                Price: {
+                    required: true
+                },
+
+            },
+            highlight: function (label) {
+                $(label).closest('.form-group').removeClass('has-success').addClass('has-error');
+            },
+            success: function (label) {
+                $(label).closest('.form-group').removeClass('has-error');
+                label.remove();
+            },
+            errorPlacement: function (error, element) {
+                var placement = element.closest('.input-group');
+                if (!placement.get(0)) {
+                    placement = element;
+                }
+                if (error.text() !== '') {
+                    placement.after(error);
+                }
+            },
+            submitHandler: function (form) {
+                var buttonText = $("#btnSaveCustomerService").html();
+                $("#btnSaveCustomerService").attr('disabled', '').html('<i class="fa fa-spinner fa-spin"></i>&nbsp; ' + buttonText);
+
+                $(form).ajaxSubmit({
+                    success: function (data) {
+                        if (data && data.success) {
+                           
+                            //$("#modal-add-customer-form").modal("hide");
+                            //refresh grid
+
+                            debugger;
+                            var grid = $("#CustomerServiceListGrid").data("kendoGrid");
+                            grid.dataSource.read();
+
+                            VT.Util.Notification(true, "Customer service has been successfully saved.");
+                        } else {
+                            VT.Util.HandleLogout(data.message);
+                            VT.Util.Notification(false, "Some error occured while saving current customer service.");
+                        }
+
+                        $("#btnSaveCustomerService").attr('disabled', null).html(buttonText);
+                        $(form).resetForm();
+                    },
+                    error: function (xhr, status, error) {
+                        $("#btnSaveCustomerService").attr('disabled', null).html(buttonText);
+                    }
+                });
+                return false;
+            }
+        });
+    });
+</script>
+
+@Html.Partial("ConfirmModal", new ModalViewModal
+{
+    Id = "delete-customer-service-modal",
+    IsAlertModel = false,
+    Title = "Delete Customer Service(s)",
+    Message = "Are you sure you want to delete the selected customer services(s)?",
+    BtnId = "btnDeleteCustomerServicesSubmit"
+})

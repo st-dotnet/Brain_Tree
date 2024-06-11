@@ -1,0 +1,264 @@
+﻿@using Kendo.Mvc.UI
+@using VT.Web.Models
+@model SaveCustomerViewModel
+
+<script type="text/javascript">
+
+    VT.Util.CustomMask("#Price",2);
+
+    function onServiceDropdownSelect(e) {
+
+        if (typeof e !== 'undefined') {
+            if (e != null) {
+                var item = this.dataItem(e.item);
+                $("#ServiceName").val(item.Name);
+                $("#Description").val(item.Description);
+            }
+        };
+        return false;
+    }
+
+    function onEdit(e) {
+        $("#companyServiceId").val(e.model.CompanyServiceId);
+    }
+
+    function onCancel(e) {
+        $("#CustomerServiceListGrid").data("kendoGrid").dataSource.read();
+    }
+
+    function additionalInfo() {
+        return {
+            companyId: $("#CompanyId").val(),
+            customerId: $("#CustomerId").val(),
+            companyServiceId: $("#companyServiceId").val()
+        }
+    }
+
+    function getCustomerServiceActionsInfo(item) {
+        return [
+            "<a class='btn btn-white btn-bitbucket btn-sm edit-customer-serivce' data-id='" + item.CustomerServiceId +
+            "'><i class='fa fa-edit'></i> Edit </a> &nbsp; <a class='btn btn-white btn-bitbucket btn-sm  m-r-xs delete-customer-serivce' data-id='" + item.CustomerServiceId +
+            "'><i class='fa fa-trash'></i> Delete </a>"
+        ].join('');
+    }
+    
+    $("#add-new-service").click(function () {
+        toggleRow();
+    });
+
+    var toggleRow = function() {
+        $("#editable-row").toggle("slow", function () {
+            // Animation complete.
+        });
+    };
+
+    var refreshGrid = function () {
+        var grid = $("#CustomerServiceListGrid").data("kendoGrid");
+        grid.dataSource.read();
+    };
+
+    var resetControls = function () {
+        $("#CustomerServiceId").val('');
+        $("#CompanyServiceId").val('');
+        $("#Description").val('');
+        $("#Price").val('');
+        $("#CompanyServiceId").attr('disabled', null);
+    };
+
+    $("#CompanyServiceId").change(function() {
+        if ($(this).val() != "") {
+            $.ajax({
+                url: '/Customers/GetCompanyServiceDetail/' + $(this).val(),
+                type: 'POST',
+                success: function (data) {
+                    $("#Description").val(data.result.Description);
+                }
+            });
+        }
+        return false;
+    });
+ 
+    $(document).on('click', '.edit-customer-serivce', function (e) {
+        e.preventDefault();
+
+        var id = $(this).data("id"); 
+        
+        $.ajax({
+            url: '/Customers/GetCustomerService/' + id,
+            type: 'GET',
+            success: function (result) {
+                $("#CustomerServiceId").val(result.customerServiceId);
+                $("#CompanyServiceId").val(result.companyServiceId);
+                $("#Description").val(result.description);
+                $("#Price").val(result.price);
+                $("#CompanyServiceId").attr('disabled', '');
+                $("#editable-row").show();
+            }
+        });
+        return false;
+    });
+
+    $(document).on('click', '.delete-customer-serivce', function (e) {
+        e.preventDefault();
+        debugger;
+        if (confirm("Are you sure you want to delete this Customer service?")) {
+            var id = $(this).data("id");
+            $.ajax({
+                url: '/Customers/DeleteCustomerService/' + id,
+                type: 'POST',
+                success: function (result) {
+                    if (result.success) {
+                        refreshGrid();
+                        $("#editable-row").hide();
+                    } else {
+                        VT.Util.HandleLogout(result.message);
+                        VT.Util.Notification(false, result.message);
+                    }
+                    return false;
+                }
+            });
+        }
+        return false;
+    });
+ 
+    $(".save-customer-service").click(function () {
+        //validation
+        var buttonText = $(".save").html();
+        $(".save").attr('disabled', '').html('<i class="fa fa-spinner fa-spin"></i>&nbsp; ' + buttonText);
+
+        $.ajax({
+            url: '/Customers/SaveCustomerServices',
+            type: 'POST',
+            data: {
+                CustomerServiceId: $("#CustomerServiceId").val(),
+                CompanyServiceId: $("#CompanyServiceId").val(),
+                CustomerId: $("#CustomerId").val(),
+                Description: $("#Description").val(),
+                Price: $("#Price").val()
+            },
+            success: function (data) {
+                if (data.success) {
+                    refreshGrid();
+                    resetControls();
+                    $("#editable-row").hide();
+                } else {
+                    VT.Util.HandleLogout(data.message);
+                    VT.Util.Notification(false, data.message);
+                }
+                $(".save").attr('disabled', null).html(buttonText);
+                $("#CompanyServiceId").attr('disabled', null);
+            }
+        });
+        return false;
+    });
+
+    $(".cancel-customer-service").click(function() {
+        resetControls();
+        $("#editable-row").hide();
+    });
+
+
+</script>
+
+<input type="hidden" id="companyServiceId" />
+
+<div class="col-lg-12">
+    <a id="add-new-service" class="btn btn-white btn-bitbucket btn-sm"> <i class="fa fa-plus"></i> &nbsp; <strong>Add New Service</strong></a>
+</div>
+
+<div class="col-lg-12 mt10" id="editable-row" style="display: none;">
+    <div class="cus-border">
+        <div class="col-lg-3">
+            <input type="hidden" id="CustomerServiceId" name="CustomerServiceId" />
+            @Html.DropDownListFor(x => x.CompanyServiceId, ViewData["CompanyServices"] as IEnumerable<SelectListItem>, new { @class = "input-sm form-control" })
+            </div>
+            <div class="col-lg-4">
+                @Html.TextBoxFor(x => x.Description, new { @class = "input-sm form-control", placeholder = "Description" })
+            </div>
+            <div class="col-lg-2">
+                @Html.TextBoxFor(x => x.Price, new { @class = "input-sm form-control", placeholder = "Price" })
+            </div>
+            <div class="col-lg-3">
+                <a class="btn btn-white btn-bitbucket btn-sm pull-right cancel-customer-service"><i class="fa fa-times"></i> Cancel </a>
+                <a class="btn btn-white btn-bitbucket btn-sm pull-right m-r-xs save-customer-service"><i class="fa fa-check-circle-o"></i> Save </a>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-lg-12 m-t-sm">
+        @(Html.Kendo().Grid<CustomerServiceViewModel>()
+            .Name("CustomerServiceListGrid")
+            .Reorderable(x => x.Columns(true))
+            .Pageable(page => page
+                .Info(true)
+                .ButtonCount(5)
+                .Messages(message => message
+                    .Empty("No data")
+                    .Next("Next")
+                    .Previous("Previous")
+                    .First("First")
+                    .Last("Last")
+                )
+            )
+            .Sortable()
+            .Columns(columns =>
+            {
+                columns.Bound(x => x.CustomerServiceId).Visible(false); ;
+                columns.Bound(x => x.CustomerId).Visible(false);
+                columns.Bound(x => x.CompanyId).Visible(false);
+                columns.Bound(x => x.CompanyServiceId).Width(195).Title("Service").ClientTemplate("#= ServiceName#").EditorTemplateName("ServicesDropdown").Width(150);
+                columns.Bound(x => x.ServiceName).Title("Name").Visible(false);
+                columns.Bound(x => x.Description).Title("Description").Width(215);
+                columns.Bound(x => x.Price).Title("Price").Width(90);
+                columns.Template(@<text></text>)
+                                  .Title("Actions").Width(150)
+                                  .ClientTemplate("#= getCustomerServiceActionsInfo.apply(this, arguments) #");
+            })
+            .DataSource(dataSource => dataSource
+            .Ajax()
+            .PageSize(10)
+            .Model(model => model.Id(p => p.CustomerServiceId))
+                    .Create(update => update.Action("CreateCustomerService", "Customers", new { customerId = Model.CustomerId, companyId = Model.CompanyId }))
+                    .Update(update => update.Action("UpdateCustomerService", "Customers", new { customerId = Model.CustomerId, companyId = Model.CompanyId }))
+                    .Destroy(update => update.Action("DeleteCustomerService", "Customers", new { customerId = Model.CustomerId, companyId = Model.CompanyId }))
+                    .Read(read => read.Action("CustomerServiceList", "Customers", new { id = Model.CustomerId }))
+                    )
+        )
+    </div>
+
+    <script type="text/javascript">
+        //register custom validation rules
+        (function ($, kendo) {
+            $.extend(true, kendo.ui.validator, {
+                rules: { // custom rules
+                    companyserviceidvalidation: function (input, params) {
+                        if (input.val().length != 0) {
+                            return true;
+                        }
+                        return false;
+                    }
+                },
+                messages: { //custom rules messages
+                    companyserviceidvalidation: function (input) {
+                        // return the message text
+                        return input.attr("data-val-companyserviceidvalidation");
+                    }
+                }
+            });
+        })(jQuery, kendo);
+
+        //show server errors if any
+        function error_handler(e) {
+            if (e.errors) {
+                var message = "Errors:\n";
+                $.each(e.errors, function (key, value) {
+                    if ('errors' in value) {
+                        $.each(value.errors, function () {
+                            message += this + "\n";
+                        });
+                    }
+                });
+                alert(message);
+            }
+        }
+    </script>

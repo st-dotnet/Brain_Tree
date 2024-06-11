@@ -1,0 +1,52 @@
+﻿@using VT.Common
+@using VT.Web.Helpers
+@using VT.Web.Models
+
+@{
+    Layout = "Layout.cshtml";
+    ViewBag.BodyCss = "";
+    var footerViewModel = new FooterViewModel();
+}
+
+@section PageLevelStyles
+{
+    @RenderSection("PageLevelStyles", false)
+}
+
+@section PageLevelScripts
+{
+    @Scripts.Render("~/bundles/kendo/js")
+    @Scripts.Render("~/bundles/apps")
+    @RenderSection("PageLevelScripts", false)
+}
+
+<!-- Wrapper-->
+<!-- PageClass give you ability to specify custom style for specific view based on action -->
+<div id="wrapper" class="@Html.PageClass()">
+    
+    @if (User != null && User.Identity != null && !User.IsInRole(UserRoles.CompanyUser.ToString()))
+    {
+        <!-- Navigation -->
+        @Html.Partial("_Navigation")
+    }
+    
+
+    <!-- Page wraper -->
+    <div id="page-wrapper" class="gray-bg @ViewBag.SpecialClass">
+
+        <!-- Top Navbar -->
+        @Html.Partial("_TopNavbar")
+
+        <!-- Main view  -->
+        @RenderBody()
+
+
+    </div>
+    <!-- End page wrapper-->
+    <!-- Right Sidebar -->
+    @*@Html.Partial("_RightSidebar")*@
+
+</div>
+<!-- End wrapper-->
+<!-- Footer -->
+@Html.Partial("_Footer", footerViewModel)

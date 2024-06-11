@@ -1,0 +1,67 @@
+﻿@model IEnumerable<VT.Web.Models.ServiceItemAttachmentListViewModel>
+@using Kendo.Mvc.UI
+
+@{
+    int count = 1;
+}
+
+<div id="modal-attachments" class="modal fade" aria-hidden="true">
+    <div class="modal-dialog" style="width: 500px;">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+                    <h4 class="modal-title" id="modal-save-customer-title">Images</h4>
+                    <small class="font-bold"></small>
+                </div>
+                <div class="modal-body">                    
+                    <div class="row">
+                        <div class="col-lg-12" id="customerServiceGrid">
+                            @foreach (var attachment in Model.OrderByDescending(x => x.Type))
+                            {
+                                <div class="file-box">
+                                    <div class="file">
+                                        <a href="#">
+                                            <span class="corner"></span>
+                                            <div class="image">
+                                                <img src="@(attachment.Url)" class="img-responsive" alt="image">
+                                            </div>
+                                            <div class="file-name">
+                                                @(attachment.Description) <br/>
+                                                <small> Added: @*@(attachment.Date.ToString("f")) <br/>*@<span id="attachment-date-@count"></span>
+                                                    <script>
+
+                                                        var year = parseInt('@(attachment.Date.Year)');
+                                                        var month = parseInt('@(attachment.Date.Month)') - 1;
+                                                        var day = parseInt('@(attachment.Date.Day)');
+                                                        var hours = parseInt('@(attachment.Date.Hour)');
+                                                        var minutes = parseInt('@(attachment.Date.Minute)');
+                                                        var seconds = parseInt('@(attachment.Date.Second)');
+                                                        var millisec = parseInt('@(attachment.Date.Millisecond)');
+
+                                                        var date = Date.UTC(year, month, day, hours, minutes, seconds, millisec);
+                                                        var val = kendo.toString(new Date(date), 'MM/dd/yyyy HH:mm:ss');
+                                                        $("#attachment-date-@count").text(val);
+                                                    </script>
+
+                                                </small>
+                                            </div>
+                                        </a>
+                                    </div>
+                                </div>
+                                count++;
+                            }
+                            
+                            @if (!Model.Any())
+                            {
+                                <span>There is no image pertaining to this service record item.</span>
+                            }
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                </div>
+            </div>
+        </div>   
+</div>
+

@@ -1,0 +1,8 @@
+﻿@model VT.Web.Models.FooterViewModel
+<div class="row">
+    <div class="footer">
+        <div>
+            <strong>Copyright</strong> Verify Teck &copy; @(DateTime.UtcNow.Year)  &nbsp; <a style="color:#ccc" target="_blank" href="#">v@(Model.AssemblyInfo.InformationalVersion)</a>.Last Modified: @(Model.AssemblyInfo.LastModifiedDate.ToLocalTime().ToString("MMM dd yyyy HH:mm"))
+        </div>
+    </div>
+</div>

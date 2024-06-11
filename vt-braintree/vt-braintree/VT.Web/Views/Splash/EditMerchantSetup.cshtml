@@ -1,0 +1,273 @@
+﻿@model VT.Web.Models.SplashMerchantModel
+
+@{
+    ViewBag.Title = "Splash";
+    Layout = "~/Views/Shared/LoggedInLayout.cshtml";
+}
+
+@section PageLevelScripts{
+
+    @Scripts.Render("~/plugins/validate")
+    <script src="@Url.Content("~/Scripts/app/splash-edit.js")"></script>
+    <script type="text/javascript">
+        $(document).ready(function () {
+            $('a[href="#tab-1"]').trigger('click');
+        })
+    </script>
+}
+
+<div class="row wrapper border-bottom white-bg page-heading">
+    <div class="col-lg-10">
+        <h2>Organization Merchant Account</h2>
+    </div>
+    <div class="col-lg-2">
+    </div>
+</div>
+
+<div class="wrapper wrapper-content animated fadeInRight">
+    <div class="row">
+        <div class="col-lg-12">
+            <div class="ibox float-e-margins">
+                <div class="ibox-title">
+                    <h5>SETUP MERCHANT ACCOUNT</h5> 
+                </div>
+                <div class="ibox-content"> 
+                    <div class="row">
+                        <div class="col-lg-12">
+                            <div class="panel blank-panel"> 
+                                <div class="panel-heading">
+                                    <div class="panel-title m-b-md"><h4>Edit Merchant Information</h4></div>
+                                    <div class="panel-options">
+                                        <ul class="nav nav-tabs">
+                                            <li class=""><a data-toggle="tab" href="#tab-1">Merchant</a></li>
+                                            <li class=""><a data-toggle="tab" href="#tab-2">Member</a></li>
+                                            <li class="active"><a data-toggle="tab" href="#tab-3">Entity</a></li>
+                                            <li class=""><a data-toggle="tab" href="#tab-4">Account</a></li>
+                                        </ul>
+                                    </div>
+                                </div>
+
+                                <div class="panel-body">
+                                    <div class="tab-content">
+                                        <div id="tab-1" class="tab-pane active">
+                                            <form id="merchantForm" action="@Url.Action("SaveMerchantInfo", "Splash")" class="form-horizontal" method="POST" role="form">
+                                                <div class="row">
+                                                    <div class="col-xs-6">
+                                                        <div class="form-group">
+                                                            <div class="col-lg-2">Annual Sales </div>
+                                                            <div class="col-sm-9">
+                                                                @Html.TextBoxFor(x => x.AnnualCCSales, new { @class = "form-control small", placeholder = "Annual Sales" })
+                                                            </div>
+                                                        </div>
+
+                                                        <div class="form-group">
+                                                            <div class="col-lg-2">Established </div>
+                                                            <div class="col-sm-9">
+                                                                @Html.TextBoxFor(x => x.Established, new { @class = "form-control small", placeholder = "Established" })
+                                                            </div>
+                                                        </div>
+
+                                                        <div class="form-group">
+                                                            <div class="col-lg-2">Category Code </div>
+                                                            <div class="col-sm-9">
+                                                                @Html.TextBoxFor(x => x.MerchantCategoryCode, new { @class = "form-control small", placeholder = "Category Code" })
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div class="row">
+                                                    <div class="modal-footer">
+                                                        <button id="btnSaveMerchant" type="submit" class="btn btn-primary">Save</button>
+                                                    </div>
+                                                </div>
+                                            </form> 
+                                        </div>
+
+                                        <div id="tab-2" class="tab-pane">
+                                            <form id="memberForm" action="@Url.Action("SaveMember", "Splash")" class="form-horizontal" method="POST" role="form">
+                                                <div class="row">
+                                                    <div class="col-xs-6">
+                                                        <div class="form-group">
+                                                            <div class="col-lg-2">Title </div>
+                                                            <div class="col-sm-9">
+                                                                @Html.TextBoxFor(x => x.MemberTitle, new { @class = "form-control small", placeholder = "Title" })
+                                                            </div>
+                                                        </div>
+
+                                                        <div class="form-group">
+                                                            <div class="col-lg-2">Date Of Birth </div>
+                                                            <div class="col-sm-9">
+                                                                @Html.TextBoxFor(x => x.MemberDateOfBirth, new { @class = "form-control small", placeholder = "Date Of Birth" })
+                                                            </div>
+                                                        </div>
+
+                                                        <div class="form-group">
+                                                            <div class="col-lg-2">Driver License </div>
+                                                            <div class="col-sm-9">
+                                                                @Html.TextBoxFor(x => x.MemberDriverLicense, new { @class = "form-control small", placeholder = "Driver License" })
+                                                            </div>
+                                                        </div>
+                                                        <div class="form-group">
+                                                            <div class="col-lg-2">Driver License State </div>
+                                                            <div class="col-sm-9">
+                                                                @Html.TextBoxFor(x => x.MemberDriverLicenseState, new { @class = "form-control small", placeholder = "Driver License State" })
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-xs-6">
+                                                        <div class="form-group">
+                                                            <div class="col-lg-2">Email</div>
+                                                            <div class="col-sm-9">
+                                                                @Html.TextBoxFor(x => x.MemberEmail, new { @class = "form-control small", placeholder = "Email" })
+                                                            </div>
+                                                        </div>
+                                                        <div class="form-group">
+                                                            <div class="col-lg-2">First Name</div>
+                                                            <div class="col-sm-9">
+                                                                @Html.TextBoxFor(x => x.MemberFirstName, new { @class = "form-control small", placeholder = "First Name" })
+                                                            </div>
+                                                        </div>
+                                                        <div class="form-group">
+                                                            <div class="col-lg-2">Last Name</div>
+                                                            <div class="col-sm-9">
+                                                                @Html.TextBoxFor(x => x.MemberLastName, new { @class = "form-control small", placeholder = "Last Name" })
+                                                            </div>
+                                                        </div>
+                                                        <div class="form-group">
+                                                            <div class="col-lg-2">Owner Ship</div>
+                                                            <div class="col-sm-9">
+                                                                @Html.TextBoxFor(x => x.MemberOwnerShip, new { @class = "form-control small", placeholder = "Owner Ship" })
+                                                            </div>
+                                                        </div>
+                                                        <div class="form-group">
+                                                            <div class="col-lg-2">Security Number</div>
+                                                            <div class="col-sm-9">
+                                                                @Html.TextBoxFor(x => x.MemberSocialSecurityNumber, new { @class = "form-control small", placeholder = "Security Number" })
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div class="row">
+                                                    <div class="modal-footer">
+                                                        <button id="btnSaveMember" type="submit" class="btn btn-primary">Save</button>
+                                                    </div>
+                                                </div>
+                                            </form>
+                                            
+                                        </div>
+                                        <div id="tab-3" class="tab-pane active">
+                                            <form id="entityForm" action="@Url.Action("SaveEntity", "Splash")" class="form-horizontal" method="POST" role="form">
+                                                <div class="row">
+                                                    <div class="col-xs-6">
+                                                        <div class="form-group">
+                                                            <div class="col-lg-2">Name</div>
+                                                            <div class="col-sm-9">
+                                                                @Html.TextBoxFor(x => x.EntityName, new { @class = "form-control small", placeholder = "Name" })
+                                                            </div>
+                                                        </div>
+                                                        <div class="form-group">
+                                                            <div class="col-lg-2">Address</div>
+                                                            <div class="col-sm-9">
+                                                                @Html.TextBoxFor(x => x.EntityAddress1, new { @class = "form-control small", placeholder = "Address" })
+                                                            </div>
+                                                        </div>
+
+                                                        <div class="form-group">
+                                                            <div class="col-lg-2">City</div>
+                                                            <div class="col-sm-9">
+                                                                @Html.TextBoxFor(x => x.EntityCity, new { @class = "form-control small", placeholder = "City" })
+                                                            </div>
+                                                        </div>
+
+                                                        <div class="form-group">
+                                                            <div class="col-lg-2">State</div>
+                                                            <div class="col-sm-9">
+                                                                @Html.TextBoxFor(x => x.EntityState, new { @class = "form-control small", placeholder = "State" })
+                                                            </div>
+                                                        </div>
+                                                        <div class="form-group">
+                                                            <div class="col-lg-2">Country</div>
+                                                            <div class="col-sm-9">
+                                                                @Html.TextBoxFor(x => x.EntityCountry, new { @class = "form-control small", placeholder = "Country" })
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-xs-6">
+                                                        <div class="form-group">
+                                                            <div class="col-lg-2">Email</div>
+                                                            <div class="col-sm-9">
+                                                                @Html.TextBoxFor(x => x.EntityEmail, new { @class = "form-control small", placeholder = "Email" })
+                                                            </div>
+                                                        </div>
+                                                        <div class="form-group">
+                                                            <div class="col-lg-2">Phone</div>
+                                                            <div class="col-sm-9">
+                                                                @Html.TextBoxFor(x => x.EntityPhone, new { @class = "form-control small", placeholder = "Phone" })
+                                                            </div>
+                                                        </div>
+                                                        <div class="form-group">
+                                                            <div class="col-lg-2">Website</div>
+                                                            <div class="col-sm-9">
+                                                                @Html.TextBoxFor(x => x.EntityWebsite, new { @class = "form-control small", placeholder = "Website" })
+                                                            </div>
+                                                        </div>
+                                                        <div class="form-group">
+                                                            <div class="col-lg-2">Zip</div>
+                                                            <div class="col-sm-9">
+                                                                @Html.TextBoxFor(x => x.EntityZip, new { @class = "form-control small", placeholder = "Zip" })
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div class="row">
+                                                    <div class="modal-footer">
+                                                        <button id="btnSaveEntity" type="submit" class="btn btn-primary">Save</button>
+                                                    </div>
+                                                </div>
+                                            </form>
+                                            
+                                        </div>
+                                        <div id="tab-4" class="tab-pane active">
+                                            <form id="accountForm" action="@Url.Action("SaveAccount", "Splash")" class="form-horizontal" method="POST" role="form">
+                                                <div class="row">
+                                                    <div class="col-xs-6">
+                                                        <div class="form-group">
+                                                            <div class="col-lg-2">Card/Account Number</div>
+                                                            <div class="col-sm-9">
+                                                                @Html.TextBoxFor(x => x.CardOrAccountNumber, new { @class = "form-control small", placeholder = "Card Or Account Number" })
+                                                            </div>
+                                                        </div>
+
+                                                        <div class="form-group">
+                                                            <div class="col-lg-2">Payment Method</div>
+                                                            <div class="col-sm-9">
+                                                                @Html.TextBoxFor(x => x.AccountsPaymentMethod, new { @class = "form-control small", placeholder = "Payment Method" })
+                                                            </div>
+                                                        </div>
+
+                                                        <div class="form-group">
+                                                            <div class="col-lg-2">Routing Code</div>
+                                                            <div class="col-sm-9">
+                                                                @Html.TextBoxFor(x => x.AccountsRoutingCode, new { @class = "form-control small", placeholder = "Routing Code" })
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div class="row">
+                                                    <div class="modal-footer">
+                                                        <button id="btnAccount" type="submit" class="btn btn-primary">Save</button>
+                                                    </div>
+                                                </div>
+                                            </form>  
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div> 
+            </div>
+        </div>
+    </div>
+</div> 
+

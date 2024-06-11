@@ -1,0 +1,23 @@
+﻿@model VT.Web.Models.ModalViewModal
+<div id="@(Model.Id)" class="modal fade">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header @(!Model.ShowHeader ? "hide":"")">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                <h4 class="modal-title">@(Model.Title)</h4>
+            </div>
+            <div class="modal-body">
+                <div id="message">@(Model.Message)</div>
+            </div>
+            <div class="modal-footer mdlcenter">
+                
+                <button type="button" class="btn btn-default" data-dismiss="modal">@(!string.IsNullOrEmpty(Model.NoButtonTitle) ? Model.NoButtonTitle : "Close")</button>
+                @if (!Model.IsAlertModel)
+                {
+                    <input type="hidden" id="hdnEntityId" name="hdnEntityId" />
+                    <button id="@(!string.IsNullOrEmpty(Model.BtnId) ? Model.BtnId : "btnModalSubmit")" type="button" class="btn btn-warning m-l-xs">@(!string.IsNullOrEmpty(Model.YesButtonTitle) ? Model.YesButtonTitle : "Submit")</button>
+                }
+            </div>
+        </div>
+    </div>
+</div>

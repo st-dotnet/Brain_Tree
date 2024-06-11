@@ -1,0 +1,47 @@
+﻿@using VT.Web.Helpers
+<!DOCTYPE html>
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+    <meta charset="utf-8" />
+    @*<meta name="viewport" content="width=device-width, initial-scale=1.0">*@
+    <meta name="viewport" content="width=device-width, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+
+    <title>VT | @ViewBag.Title</title>
+
+    <link href='http://fonts.googleapis.com/css?family=Open+Sans:400,300,600,700' rel='stylesheet' type='text/css'>
+    <!-- Add local styles, mostly for plugins css file -->
+    @if (IsSectionDefined("Styles"))
+        {@RenderSection("Styles", required: false)}
+     
+    <!-- Add jQuery Style direct - used for jQGrid plugin -->
+    <link href="@Url.Content("~/Scripts/plugins/jquery-ui/jquery-ui.css")" rel="stylesheet" type="text/css" />
+
+    <!-- Primary Inspinia style -->     
+    @Styles.Render("~/fonts/font-awesome/css/styles")      
+    @Styles.Render("~/Content/kendo/styles")                                          
+    @Styles.Render("~/Content/styles")
+    @Styles.Render("~/Content/plugins/toastr/toastrStyles")
+
+    @RenderSection("PageLevelStyles", false)
+
+    @Scripts.Render("~/Scripts/jquery")
+    
+    <!-- Section for main scripts render -->
+    @Scripts.Render("~/Scripts/bootstrap")
+    @Scripts.Render("~/Scripts/plugins/slimscroll/js")
+    @Scripts.Render("~/Scripts/plugins/toastr/js")
+    @Scripts.Render("~/bundles/apps")
+    
+    @RenderSection("PageHeadScripts", required: false)
+</head>
+<body class="@ViewBag.BodyCss">
+     
+    <!-- Main view  -->
+    @RenderBody()
+     
+    <!-- Handler for local scripts -->
+    @RenderSection("PageLevelScripts", required: false)
+</body>
+</html>

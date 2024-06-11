@@ -1,0 +1,74 @@
+﻿@model VT.Web.Models.GatewayCustomerViewModel
+@{
+    ViewBag.Title = "Set up Your Credit Card";
+    Layout = "~/Views/Shared/LoggedOutLayout.cshtml";
+}
+
+@section PageLevelScripts
+{
+    @Scripts.Render("~/plugins/validate")
+    <script src="@Url.Content("~/Scripts/app/braintree-customer.js")"></script>
+    <script src="https://js.braintreegateway.com/v2/braintree.js"></script>
+    <script>
+    var clientToken = "@Model.ClientToken";
+        braintree.setup(clientToken, "custom", {
+            id: "braintree-customer-form",
+            hostedFields: {
+                number: {
+                    selector: "#card-number"
+                },
+                cvv: {
+                    selector: "#cvv"
+                },
+                expirationDate: {
+                    selector: "#expiration-date"
+                },
+                styles: {
+                    // Styling a specific field
+                    ".number": {
+                        "font-family": "monospace",
+                         "font-size": "12pt",
+                    },
+                    // Styling a specific field
+                    ".cvv": {
+                        "font-family": "monospace",
+                        "font-size": "12pt",
+                    },
+                    // Styling a specific field
+                    ".expiration-date": {
+                        "font-family": "monospace",
+                        "font-size": "12pt",
+                    },
+                    // Styling element state
+                    ":focus": {
+                        "color": "blue"
+                    },
+                    ".valid": {
+                        "color": "green"
+                    },
+                    ".invalid": {
+                        "color": "red"
+                    },
+
+                    // Media queries
+                    // Note that these apply to the iframe, not the root window.
+                    "@@media screen and (max-width: 700px)": {
+                        "input": {
+                            "font-size": "14pt"
+                        }
+                    }
+                }
+            },
+            onPaymentMethodReceived: function (payload) {
+                $("#Nonce").val(payload.nonce);
+            },
+            onError: function (error) {
+                $("#Nonce").val('ERROR');
+            }
+        });
+    </script>
+}
+
+<form id="braintree-customer-form" action="@Url.Action("SetPaymentMethod", "SetPayment")" class="form-horizontal" method="POST" role="form">
+   @Html.Partial("CreditCardForm", Model)
+</form>

@@ -1,0 +1,50 @@
+﻿@using VT.Common
+@model VT.Web.Models.MessageViewModel
+
+@{
+    ViewBag.Title = "CompanyMessage";
+    Layout = "~/Views/Shared/LoggedInLayout.cshtml";
+}
+
+ <div class="row wrapper border-bottom white-bg page-heading">
+    <div class="col-lg-10">
+        <h2>
+            @if (Model.Type == GatewayAccount.Merchant)
+            {
+                <text>ORGANIZATION</text>
+            }
+            else
+            {
+                <text>EMPLOYEE</text>
+            }
+        </h2>
+    </div>
+    <div class="col-lg-2">
+    </div>
+</div>
+<div class="wrapper wrapper-content animated fadeInRight">
+    <div class="row">
+        <div class="col-lg-12">
+            <div class="ibox float-e-margins">
+                <div class="ibox-title">
+                    <h5>
+                        @if (Model.Type == GatewayAccount.Merchant)
+                        {
+                            <text>Merchant Account</text>
+                        }
+                        else
+                        {
+                            <text>Customer Account</text>
+                        }
+                        
+                    </h5>
+                </div>
+                <div class="ibox-content">
+                    <div class="alert alert-@(Model.IsSuccess ? "success" : "danger")">
+                        @Html.Raw(Model.Message)
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

@@ -1,0 +1,115 @@
+﻿@model VT.Web.Models.GatewayCustomerViewModel
+
+<div class="row wrapper border-bottom white-bg page-heading">
+    <div class="col-lg-10">
+        <h2>Credit Card Processing</h2>
+    </div>
+    <div class="col-lg-2">
+    </div>
+</div>
+
+@if (Model.IsCustomerTokenExpired)
+{
+    <div class="wrapper wrapper-content animated fadeInRight">
+        <div class="row">
+            <div class="col-lg-12">
+                Your link has been expired. Please contact your company administrator.
+            </div>
+        </div>
+    </div>
+}
+else if (Model.IsCustomerNotFound)
+{
+    <div class="wrapper wrapper-content animated fadeInRight">
+        <div class="row">
+            <div class="col-lg-12">
+                We are unable to access your account. Please contact your company administrator.
+            </div>
+        </div>
+    </div>
+}
+else
+{
+    <div class="wrapper wrapper-content animated fadeInRight">
+        <div class="row">
+            <div class="col-lg-12">
+                <div class="ibox float-e-margins">
+                    <div class="ibox-title">
+                        <h5>SETUP CUSTOMER</h5>
+                        <div class="ibox-tools">
+                            <a class="collapse-link">
+                                <i class="fa fa-chevron-up"></i>
+                            </a>
+                        </div>
+                    </div>
+                    <div class="ibox-content">
+                        @if (!string.IsNullOrEmpty(Model.CreditCard))
+                        {
+                            <div class="row">
+                                <div class="col-lg-12">
+                                    <div class="form-group">
+                                        <label class="col-sm-3 control-label">Summary</label>
+                                        <div class="col-sm-9">
+                                            Credit Card : **********@Model.CreditCard <br />
+                                            Expiration  : @Model.Expiration
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        }
+                        <div class="row">
+                            <div class="col-lg-12">
+                                @Html.HiddenFor(x => x.CustomerId)
+                                @Html.HiddenFor(x => x.AccountType)
+                                @Html.HiddenFor(x => x.CcToken)
+                                @Html.HiddenFor(x => x.RedirectUrl)
+                                <div class="form-group">
+                                    <label class="col-sm-3 control-label">First Name</label>
+                                    <div class="col-sm-9">
+                                        @Html.TextBoxFor(x => x.FirstName, new { @class = "form-control small" })
+                                    </div>
+                                </div>
+                                <div class="hr-line-dashed"></div>
+                                <div class="form-group">
+                                    <label class="col-sm-3 control-label">Last Name</label>
+                                    <div class="col-sm-9">
+                                        @Html.TextBoxFor(x => x.LastName, new { @class = "form-control small" })
+                                    </div>
+                                </div>
+                                <div class="hr-line-dashed"></div>
+                                <div class="form-group">
+                                    <label class="col-sm-3 control-label">Email</label>
+                                    <div class="col-sm-9">
+                                        @Html.TextBoxFor(x => x.Email, new { @class = "form-control small" })
+                                    </div>
+                                </div>
+                                <div class="hr-line-dashed"></div>
+                                <div class="form-group">
+                                    <label class="col-sm-3 control-label" for="card-number">Card Number</label>
+                                    <div class="col-sm-9" id="card-number"></div>
+                                </div>
+                                <div class="hr-line-dashed"></div>
+                                <div class="form-group">
+                                    <label class="col-sm-3 control-label" for="cvv">CVV</label>
+                                    <div class="col-sm-9" id="cvv"></div>
+                                </div>
+                                <div class="hr-line-dashed"></div>
+                                <div class="form-group">
+                                    <label class="col-sm-3 control-label" for="expiration-date">Expiration Date</label>
+                                    <div class="col-sm-9" id="expiration-date"></div>
+                                </div>
+                                <div class="modal-footer">
+                                    @Html.HiddenFor(x => x.Nonce)
+                                    <button id="btnSaveCustomer" type="submit" class="btn btn-warning">Submit</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+}
+
+
+

@@ -1,0 +1,149 @@
+﻿@using VT.Web.Models
+@model VT.Web.Models.SplashCustomerModel
+
+@{
+    ViewBag.Title = "Splash";
+    Layout = "~/Views/Shared/LoggedInLayout.cshtml";
+}
+
+@section PageLevelScripts{
+
+    @Scripts.Render("~/plugins/validate")
+    <script src="@Url.Content("~/Scripts/app/splash-edit-customer.js")"></script>
+    <script type="text/javascript">
+        $(document).ready(function () {
+            $('a[href="#tab-1"]').trigger('click');
+        })
+    </script>
+}
+
+<div class="row wrapper border-bottom white-bg page-heading">
+    <div class="col-lg-10">
+        <h2>Customer Credit Card</h2>
+    </div>
+    <div class="col-lg-2">
+    </div>
+</div>
+
+<div class="wrapper wrapper-content animated fadeInRight">
+    <div class="row">
+        <div class="col-lg-12">
+            <div class="ibox float-e-margins">
+                <div class="ibox-title">
+                    <h5>SETUP CREDIT CARD</h5>
+                </div>
+                <div class="ibox-content">
+                    <div class="row">
+                        <div class="col-lg-12">
+                            <div class="panel blank-panel">
+                                <div class="panel-heading">
+                                    <div class="panel-title m-b-md"><h4>Edit CUSTOMER INFORMATION</h4></div>
+                                    <div class="panel-options">
+                                        <ul class="nav nav-tabs">
+                                            <li class=""><a data-toggle="tab" href="#tab-1">Customer</a></li>
+                                            <li class=""><a data-toggle="tab" href="#tab-2">Payment</a></li>
+                                        </ul>
+                                    </div>
+                                </div>
+
+                                <div class="panel-body">
+                                    <div class="tab-content">
+                                        <div id="tab-1" class="tab-pane active">
+                                            <form id="customerDetailForm" action="@Url.Action("SaveCustomerDetail", "Splash")" class="form-horizontal" method="POST" role="form">
+                                                <div class="row">
+                                                    <div class="col-xs-6">
+                                                        <div class="form-group">
+                                                            <div class="col-lg-2">First Name</div>
+                                                            <div class="col-sm-9">
+                                                                @Html.HiddenFor(x => x.CustomerId)
+                                                                @Html.TextBoxFor(x => x.CustomerFirstName, new { @class = "form-control small", placeholder = "FirstName" })
+                                                            </div>
+                                                        </div>
+
+                                                        <div class="form-group">
+                                                            <div class="col-lg-2">Last Name </div>
+                                                            <div class="col-sm-9">
+                                                                @Html.TextBoxFor(x => x.CustomerLastName, new { @class = "form-control small", placeholder = "LastName" })
+                                                            </div>
+                                                        </div>
+
+                                                        <div class="form-group">
+                                                            <div class="col-lg-2">Email</div>
+                                                            <div class="col-sm-9">
+                                                                @Html.TextBoxFor(x => x.CustomerEmail, new { @class = "form-control small", placeholder = "Email" })
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div class="row">
+                                                    <div class="modal-footer">
+                                                        <button id="btnSaveCustomerDetail" type="submit" class="btn btn-primary">Save</button>
+                                                    </div>
+                                                </div>
+                                            </form>
+                                        </div>
+
+                                        <div id="tab-2" class="tab-pane">
+
+                                            @if (!string.IsNullOrEmpty(Model.PaymentInactive) && Model.PaymentInactive == "1")
+                                            {
+                                                <a data-toggle="modal" href="#modal-add-payment-form" id="btnAddPayment" class="btn btn-info btn-rounded btn-outline "><i class="fa fa-plus"></i> &nbsp; Add</a>
+                                            }
+                                            <div class="row">
+                                                <form id="customerDetailForm" action="@Url.Action("SaveCustomerDetail", "Splash")" class="form-horizontal" method="POST" role="form">
+                                                    <div class="col-xs-6">
+                                                    </div>
+                                                    <table class="table table-bordered table-hover table-striped" border="0" cellpadding="0" cellspacing="0">
+                                                        <thead>
+                                                            <tr>
+                                                                <th>CardNumber</th>
+                                                                <th>CVV</th>
+                                                                <th>ExpirationDate</th>
+                                                                <th>Status</th>
+                                                                <th>Action</th>
+                                                            </tr>
+                                                        </thead>
+                                                        @if (!string.IsNullOrEmpty(Model.PaymentNumber))
+                                                        {
+                                                            <tr>
+                                                                <td>@Model.PaymentNumber</td>
+                                                                <td>@Model.PaymentCvv</td>
+                                                                <td>@Model.PaymentExpiration</td>
+                                                                <td>@(Model.PaymentInactive == "0" ? "Active" : "Inactive")</td>
+                                                                <td>
+                                                                    @if (!string.IsNullOrEmpty(Model.PaymentInactive) && Model.PaymentInactive == "0")
+                                                                    {
+                                                                        <a href="#" data-customerid="@(Model.CustomerId)" id="deletePayment">Delete/Disable Card</a>
+                                                                    }
+                                                                </td>
+                                                            </tr>
+                                                        }
+                                                    </table>
+                                                </form>
+                                            </div>
+                                           
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@Html.Partial("AddPaymentDetail", new SplashCustomerModel
+{
+    CustomerId = Model.CustomerId
+})
+
+@Html.Partial("ConfirmModal", new ModalViewModal
+{
+    Id = "delete-payment-confirm-modal",
+    IsAlertModel = false,
+    Title = "Delete Payment",
+    Message = "Are you sure you want to delete this payment method?",
+    //BtnId = "deletePayment"
+})

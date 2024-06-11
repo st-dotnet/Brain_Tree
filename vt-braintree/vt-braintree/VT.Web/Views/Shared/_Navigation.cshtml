@@ -1,0 +1,130 @@
+﻿@using VT.Common
+@using VT.Common.Utils
+@using VT.Services.Interfaces
+@using VT.Web.Helpers
+@{
+    bool canSee = false;
+    var userFullName = string.Empty;
+    var userRole = string.Empty;
+    var billingReportUrl = string.Empty;
+    var commissionUrl = string.Empty;
+    var gateway = 1;
+
+    if (User != null && User.Identity != null && User.Identity.IsAuthenticated)
+    {
+        var customIdentity = (CustomIdentity)User.Identity;
+        var companyService = DependencyResolver.Current.GetService<ICompanyService>();
+
+        if (customIdentity != null)
+        {
+            canSee = customIdentity.CompanyId == null;
+            if (customIdentity.CompanyId != null)
+            {
+                var company = companyService.GetCompany(customIdentity.CompanyId.Value);
+                if (company != null)
+                {
+                    canSee = !string.IsNullOrEmpty(company.GatewayCustomerId) &&
+                             !string.IsNullOrEmpty(company.MerchantAccountId);
+                }
+            }
+
+            userFullName = customIdentity.FullName;
+            userRole = !string.IsNullOrEmpty(customIdentity.CompanyName) ? customIdentity.CompanyName : "Super Admin";
+            billingReportUrl = User.IsInRole(UserRoles.SuperAdmin.ToString()) ? Url.Action("Index", "Billing") : Url.Action("Customer", "Billing");
+            commissionUrl = User.IsInRole(UserRoles.SuperAdmin.ToString()) ? Url.Action("Index", "Commissions") : Url.Action("Customer", "Commissions");
+            gateway = customIdentity.PaymentGateway;
+        }
+    }
+
+}
+<nav class="navbar-default navbar-static-side" role="navigation">
+    <div class="sidebar-collapse">
+        <ul class="nav" id="side-menu">
+            <li class="nav-header">
+                <div class="dropdown profile-element">
+                    <!--<span>
+                            <img alt="image" class="img-circle" src="img/profile_small.jpg" />
+                        </span>-->
+                    <a data-toggle="dropdown" class="dropdown-toggle" href="#">
+                        <span class="clear">
+                            <span class="block m-t-xs">
+                                <strong class="font-bold">@(userFullName)</strong>
+                            </span> <span class="text-muted text-xs block"> @(userRole)</span>
+                        </span>
+                    </a>
+                </div>
+                <div class="logo-element">
+                    VT
+                </div>
+            </li>
+
+            @if (User != null && User.IsInRole(UserRoles.SuperAdmin.ToString()))
+            {
+                <li class="@Html.IsSelected(controller: "Organizations")">
+                    <a href="@Url.Action("Index", "Organizations")">@*<i class="fa fa-building-o"></i>*@ <span class="nav-label">ORGANIZATIONS</span> </a>
+                </li>
+            }
+
+            <li class="@Html.IsSelected(controller: "Users")">
+                <a href="@(canSee || User.IsInRole(UserRoles.SuperAdmin.ToString()) ? Url.Action("Index", "Users") : "#")">@*<i class="fa fa-users"></i>*@ <span class="nav-label">EMPLOYEES</span> </a>
+            </li>
+            <li class="@Html.IsSelected(controller: "Customers")">
+                <a href="@(canSee || User.IsInRole(UserRoles.SuperAdmin.ToString()) ? Url.Action("Index", "Customers") : "#")">@*<i class="fa fa-arrows"></i>*@ <span class="nav-label">CUSTOMERS</span> </a>
+            </li>
+            <li class="@Html.IsSelected(controller: "CompanyServices")">
+                <a href="@(canSee || User.IsInRole(UserRoles.SuperAdmin.ToString()) ? Url.Action("Index", "CompanyServices") : "#")">@*<i class="fa fa-cogs"></i>*@ <span class="nav-label">COMPANY SERVICES</span> </a>
+            </li>
+            <li class="@Html.IsSelected(controller: "ServiceRecords")">
+                <a href="@(canSee || User.IsInRole(UserRoles.SuperAdmin.ToString()) ? Url.Action("Index", "ServiceRecords") : "#")">@*<i class="fa fa-cogs"></i>*@ <span class="nav-label">SERVICE ACTIVITY</span> </a>
+            </li>
+
+            <li class="@Html.IsSelected(controller: "Billing", action:"Index|Customer")">
+                @if (User.IsInRole(UserRoles.SuperAdmin.ToString()))
+                {
+                    <a href="@billingReportUrl"> <span class="nav-label">UNCOLLECTED COMMISSIONS</span> </a>
+                }
+                else
+                {
+                    <a href="@(canSee ? billingReportUrl : "#")"><span class="nav-label">UNBILLED SERVICES</span> </a>
+                }
+            </li>
+
+            <li class="@Html.IsSelected(controller: "Billing", action: "VoidedInvoice")">
+                <a href="@Url.Action("VoidedInvoice", "Billing", new {id = (int?) null})"> <span class="nav-label">VOID INVOICES</span> </a>
+            </li>
+
+            <li class="@Html.IsSelected(controller: "Accounting")">
+                <a href="@(canSee || User.IsInRole(UserRoles.SuperAdmin.ToString()) ? Url.Action("UnPaidServices", "Accounting") : "#")"><span class="nav-label">INCOME & EXPENSE</span> </a>
+            </li>
+
+            @if (User.IsInRole(UserRoles.SuperAdmin.ToString()))
+            {
+                <li class="@Html.IsSelected(action: "Commissions")">
+                    <a href="@Url.Action("Index", "Commissions", new {id = (int?) null})">COMMISSIONS</a>
+                </li>
+            }
+
+            @if (!User.IsInRole(UserRoles.SuperAdmin.ToString()))
+            {
+                <li class="@Html.IsSelected(controller: "Company")">
+                    <a href="#">@*<i class="fa fa-list-alt"></i>*@ <span class="nav-label">SETTINGS</span><span class="fa arrow"></span></a>
+                    <ul class="nav nav-second-level">
+                        @if (gateway == 1)
+                        {
+                            <li class="@Html.IsSelected(action: "SetupMerchant")"><a href="@Url.Action("SetupMerchant", "Config", new {id = (int?)null})">MERCHANT ACCOUNT SETUP</a></li>
+                            <li class="@Html.IsSelected(action: "SetupCc")"><a href="@Url.Action("SetupCc", "Config", new {id = (int?)null})">CREDIT CARD SETUP</a></li>
+                        }
+                        else if (gateway == 2)
+                        {
+                            <li class="@Html.IsSelected(action: "MerchantSetup")"><a href="@Url.Action("MerchantSetup", "Splash", new {id = (int?)null})">MERCHANT ACCOUNT SETUP</a></li>
+                            <li class="@Html.IsSelected(action: "SetupCc")"><a href="@Url.Action("SetupMerchantCc", "Splash", new {id = (int?)null})">CREDIT CARD SETUP</a></li>
+                            
+                        }
+                    </ul>
+                </li>
+
+            }
+
+        </ul>
+    </div>
+</nav>

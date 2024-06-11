@@ -1,0 +1,58 @@
+﻿@using Kendo.Mvc.UI
+@model VT.Services.DTOs.OrganizationDetailResponse
+
+<div class="col-lg-12">
+    <div class="wrapper wrapper-content animated fadeInUp">
+        <div class="ibox">
+            <div class="ibox-content">
+                <div class="row">
+                    <div class="col-lg-12">
+                        <div class="m-b-md">
+                            <a class='btn btn-white btn-xs pull-right edit-org' data-id='@Model.OrganizationId' href='#' title='Edit'>Edit Organization</a>
+                            <h2>Detail of "@(Model.Name)"  </h2>
+                        </div>
+                        <dl class="dl-horizontal">
+                            <dt>Status:</dt>
+                            <dd><span class="label label-primary"> @(Model.IsDeleted ? "Inactive" : "Active")</span></dd>
+                        </dl>
+                        <div class="col-lg-5">
+                            <dl class="dl-horizontal">
+                                <dt>Service Fee %:</dt>
+                                <dd>
+                                    <strong>@(Model.ServiceFeePercentage)</strong><br>
+                                </dd>
+                            </dl>
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-lg-5">
+                        <dl class="dl-horizontal">
+                            <dt>Address:</dt>                           
+                            <dd>
+                                <strong>@(Model.Address)</strong><br>
+                                @(Model.City), @(Model.State) @(Model.PostalCode)<br>
+                                @(Model.Country)
+                            </dd>
+                        </dl>
+                    </div>
+                    <div class="col-lg-5">
+                        <dl class="dl-horizontal">
+                            <dt>Contact:</dt>
+                            <dd>
+                                <strong>@(string.Format("{0} {1}", Model.ContactFirstName, Model.ContactLastName))</strong> <br />
+                                @(Model.ContactEmail) <br />
+                                <abbr title="Phone">P:</abbr> @(Model.ContactTelephone != null ? Model.ContactTelephone + "," : string.Empty) @(Model.ContactMobile)
+                            </dd>
+                            @*<dt>Services:</dt>
+                            <dd>3</dd>
+                            <dt>Organization:</dt>
+                            <dd><a class="text-navy" href="#"> @(Model.CompanyName)</a> </dd>*@
+                        </dl>
+                    </div>
+                    
+                </div>                
+            </div>
+        </div>
+    </div>
+</div>

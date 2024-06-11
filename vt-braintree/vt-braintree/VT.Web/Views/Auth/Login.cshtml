@@ -1,0 +1,46 @@
+﻿@model VT.Web.Models.SignInViewModel
+@{
+    Layout = "~/Views/Shared/LoggedOutLayout.cshtml";
+    ViewBag.Title = "Login";
+}
+
+@section PageLevelScripts
+{
+    @Scripts.Render("~/plugins/validate")
+    @Scripts.Render("~/Scripts/app/login")
+}
+
+<div class="middle-box text-center loginscreen animated fadeInDown">
+    <div>
+        <div>
+            <h4 class="logo-name">VT</h4>
+        </div>
+        <h3>Welcome to WORKFLOW</h3>
+        <p>A perfect service management solution.</p>
+        <p>Login in. To see it in action.</p>
+
+        @using (Html.BeginForm("Authenticate", "Auth", null, FormMethod.Post, new { @class = "m-t", role = "form", id = "loginForm" }))
+        {
+            @Html.AntiForgeryToken()
+
+            <div class="form-group">
+                @Html.TextBoxFor(x => x.UserName, new { placeholder = "Username", @class = "form-control" })
+            </div>
+            <div class="form-group">
+                @Html.PasswordFor(x => x.Password, new { placeholder = "Password", @class = "form-control" })
+            </div>
+            
+            <div class="form-group">
+                <button type="submit" id="btnLogin" class="btn btn-primary block full-width m-b">Login</button>
+            </div>
+            
+            <div class="form-group m-t-md">
+                <span class="custom-danger hide"></span>
+            </div>
+            
+            
+        }
+
+        <p class="m-t"> <small>&copy; 2015</small> &nbsp;  <small>Version : @(System.DateTime.Now.ToString("yyyy.MM.dd"))</small></p>
+    </div>
+</div>

@@ -1,0 +1,12 @@
+﻿@using Kendo.Mvc.UI
+@model int
+
+@(Html.Kendo().DropDownList()
+    .Name("CompanyServiceId")
+    .OptionLabel("--Select--")
+    .DataTextField("Name")
+    .DataValueField("Id")
+    .Events(events => events.Select("onServiceDropdownSelect"))
+                    .DataSource(dataSource => dataSource.Read(read => read.Action("GetCompanyServicesNew","Customers").Data("additionalInfo")))
+    .AutoBind(true)
+      )

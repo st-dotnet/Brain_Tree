@@ -1,0 +1,53 @@
+﻿@using VT.Common
+@model VT.Web.Models.SplashCustomerModel
+<div id="modal-add-payment-form" class="modal fade" aria-hidden="true">
+    <div class="modal-dialog">
+        <form id="savePaymentDetailForm" action="@Url.Action("SavePaymentDetail", "Splash")" class="form-horizontal" method="POST" role="form">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+                    <h4 class="modal-title" id="modal-payment-form-title"> Add Payment Details</h4>
+                    <small class="font-bold"></small>
+                </div>
+                <div class="modal-body">
+                    <div class="row">
+                        <div class="col-lg-12">
+                            @Html.HiddenFor(x => x.CompanyId)
+                            @Html.HiddenFor(x => x.CustomerId)
+                            <input type="hidden" value="@Model.CustomerFirstName" id="OriginalEmail" name="OriginalEmail"/>
+
+                            <div class="form-group">
+                                <label class="col-sm-3 control-label">Card Number</label>
+                                <div class="col-sm-9">
+                                    @Html.TextBoxFor(x => x.PaymentNumber, new {@class = "form-control small", placeholder = "Card Number"})
+                                </div> 
+                            </div>
+                            <div class="form-group">
+                                <label class="col-sm-3 control-label">CVV</label>
+                                <div class="col-sm-9">
+                                    @Html.TextBoxFor(x => x.PaymentCvv, new {@class = "form-control small", placeholder = "CVV"})
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label class="col-sm-3 control-label">Payment Method</label>
+                                <div class="col-sm-9">
+                                    @Html.DropDownListFor(x => x.PaymentMethod, ViewData["PaymentMethod"] as IEnumerable<SelectListItem>, new { @class = "form-control" })
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label class="col-sm-3 control-label">Expiration date</label>
+                                <div class="col-sm-9">
+                                    @Html.TextBoxFor(x => x.PaymentExpiration, new { @class = "form-control small", placeholder = "Expiration Date" })
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                    <button id="btnSavePaymentDetail" type="submit" class="btn btn-warning">Submit</button>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
